@@ -40,4 +40,49 @@ router.get('/difficulty/:level', async (req, res) => {
     }
 });
 
+// Create new workout
+router.post('/', async (req, res) => {
+    try {
+        const { 
+            title, 
+            description, 
+            exercises, 
+            difficulty,
+            duration,
+            category,
+            creator 
+        } = req.body;
+
+        // Validate required fields
+        if (!title || !description || !exercises || !difficulty || !duration || !category || !creator) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+
+        // Validate exercises array
+        if (!Array.isArray(exercises) || exercises.length === 0) {
+            return res.status(400).json({ message: 'At least one exercise is required' });
+        }
+
+        // Create new workout
+        const workout = new Workout({
+            title,
+            description,
+            exercises,
+            difficulty,
+            duration,
+            category,
+            creator
+        });
+
+        const savedWorkout = await workout.save();
+        
+        // Populate creator details in response
+        await savedWorkout.populate('creator', 'name email');
+        
+        res.status(201).json(savedWorkout);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
 module.exports = router; 
