@@ -5,6 +5,7 @@ const cors = require('cors');
 // Import routes
 const userRoutes = require('./routes/userRoutes');
 const workoutRoutes = require('./routes/workoutRoutes');
+const updateRoutes = require('./routes/updateRoutes');
 
 // Create Express app
 const app = express();
@@ -22,6 +23,7 @@ app.get('/', (req, res) => {
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/workouts', workoutRoutes);
+app.use('/api/update', updateRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
