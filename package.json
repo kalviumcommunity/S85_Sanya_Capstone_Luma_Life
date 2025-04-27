@@ -1,0 +1,14 @@
+{
+  "name": "luma-life",
+  "version": "1.0.0",
+  "description": "Luma Life Fitness Application",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "cd backend && node server.js",
+    "install": "cd backend && npm install",
+    "build": "cd backend && npm install"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+} 
