@@ -1,15 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const Workout = require('../models/Workout');
+const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 
 // Get all workouts
 router.get('/', async (req, res) => {
     try {
-        const workouts = await Workout.find()
-            .populate('creator', 'name email');
+        const workouts = await Workout.find().populate('createdBy', 'name').populate('exercises.exercise');
         res.json(workouts);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 });
 
@@ -17,14 +18,14 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const workout = await Workout.findById(req.params.id)
-            .populate('creator', 'name email');
-            
+            .populate('createdBy', 'name')
+            .populate('exercises.exercise');
         if (!workout) {
             return res.status(404).json({ message: 'Workout not found' });
         }
         res.json(workout);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 });
 
@@ -41,47 +42,58 @@ router.get('/difficulty/:level', async (req, res) => {
 });
 
 // Create new workout
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
+    const workout = new Workout({
+        ...req.body,
+        createdBy: req.user._id
+    });
+
     try {
-        const { 
-            title, 
-            description, 
-            exercises, 
-            difficulty,
-            duration,
-            category,
-            creator 
-        } = req.body;
+        const newWorkout = await workout.save();
+        res.status(201).json(newWorkout);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
 
-        // Validate required fields
-        if (!title || !description || !exercises || !difficulty || !duration || !category || !creator) {
-            return res.status(400).json({ message: 'All fields are required' });
+// Update workout
+router.patch('/:id', auth, async (req, res) => {
+    try {
+        const workout = await Workout.findById(req.params.id);
+        if (!workout) {
+            return res.status(404).json({ message: 'Workout not found' });
         }
 
-        // Validate exercises array
-        if (!Array.isArray(exercises) || exercises.length === 0) {
-            return res.status(400).json({ message: 'At least one exercise is required' });
+        // Check if user is the creator or admin
+        if (workout.createdBy.toString() !== req.user._id.toString() && !req.user.isAdmin) {
+            return res.status(403).json({ message: 'Not authorized to update this workout' });
         }
 
-        // Create new workout
-        const workout = new Workout({
-            title,
-            description,
-            exercises,
-            difficulty,
-            duration,
-            category,
-            creator
-        });
+        Object.assign(workout, req.body);
+        const updatedWorkout = await workout.save();
+        res.json(updatedWorkout);
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
 
-        const savedWorkout = await workout.save();
-        
-        // Populate creator details in response
-        await savedWorkout.populate('creator', 'name email');
-        
-        res.status(201).json(savedWorkout);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
+// Delete workout
+router.delete('/:id', auth, async (req, res) => {
+    try {
+        const workout = await Workout.findById(req.params.id);
+        if (!workout) {
+            return res.status(404).json({ message: 'Workout not found' });
+        }
+
+        // Check if user is the creator or admin
+        if (workout.createdBy.toString() !== req.user._id.toString() && !req.user.isAdmin) {
+            return res.status(403).json({ message: 'Not authorized to delete this workout' });
+        }
+
+        await workout.remove();
+        res.json({ message: 'Workout deleted' });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
     }
 });
 

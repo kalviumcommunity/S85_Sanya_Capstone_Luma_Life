@@ -1,57 +1,50 @@
 const mongoose = require('mongoose');
 
-const exerciseSchema = new mongoose.Schema({
+const workoutSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true
-    },
-    sets: {
-        type: Number,
-        required: true
-    },
-    reps: {
-        type: Number,
-        required: true
-    },
-    weight: {
-        type: Number,
-        default: 0
-    },
-    duration: {
-        type: Number,
-        default: 0
-    },
-    notes: String
-});
-
-const workoutSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: true,
+        required: [true, 'A workout must have a name'],
         trim: true
     },
     description: {
         type: String,
-        required: true
+        required: [true, 'A workout must have a description']
     },
-    creator: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    exercises: [exerciseSchema],
-    difficulty: {
-        type: String,
-        enum: ['Beginner', 'Intermediate', 'Advanced'],
-        required: true
-    },
+    exercises: [{
+        exercise: {
+            type: mongoose.Schema.ObjectId,
+            ref: 'Exercise',
+            required: [true, 'A workout must contain exercises']
+        },
+        sets: {
+            type: Number,
+            required: [true, 'An exercise must have a number of sets']
+        },
+        reps: {
+            type: Number,
+            required: [true, 'An exercise must have a number of reps']
+        },
+        restTime: {
+            type: Number,
+            required: [true, 'An exercise must have a rest time in seconds']
+        }
+    }],
     duration: {
         type: Number,
-        required: true
+        required: [true, 'A workout must have a duration in minutes']
     },
-    category: {
+    difficulty: {
         type: String,
-        required: true
+        required: [true, 'A workout must have a difficulty level'],
+        enum: {
+            values: ['beginner', 'intermediate', 'advanced'],
+            message: 'Difficulty must be either beginner, intermediate, or advanced'
+        }
+    },
+    createdBy: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+        required: [true, 'A workout must be created by a user']
     },
     createdAt: {
         type: Date,
@@ -59,4 +52,6 @@ const workoutSchema = new mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('Workout', workoutSchema); 
+const Workout = mongoose.model('Workout', workoutSchema);
+
+module.exports = Workout; 
