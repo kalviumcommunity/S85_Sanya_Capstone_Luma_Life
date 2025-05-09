@@ -34,6 +34,10 @@ const exerciseSchema = new mongoose.Schema({
             message: 'Difficulty must be either beginner, intermediate, or advanced'
         }
     },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
     videoUrl: String,
     imageUrl: String,
     createdBy: {
@@ -41,10 +45,7 @@ const exerciseSchema = new mongoose.Schema({
         ref: 'User',
         required: [true, 'An exercise must be created by a user']
     },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    }
+    
 });
 
 const Exercise = mongoose.model('Exercise', exerciseSchema);

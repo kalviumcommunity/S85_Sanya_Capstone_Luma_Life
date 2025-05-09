@@ -21,14 +21,15 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
     savedWorkouts: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Workout'
     }],
-    createdAt: {
-        type: Date,
-        default: Date.now
-    }
 });
 
 module.exports = mongoose.model('User', userSchema); 
