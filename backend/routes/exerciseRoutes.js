@@ -1,9 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const Exercise = require('../models/Exercise');
-const auth = require('../middleware/auth');
-const admin = require('../middleware/admin');
-
 // Get all exercises
 router.get('/', async (req, res) => {
     try {
@@ -28,7 +25,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Create new exercise
-router.post('/', auth, async (req, res) => {
+router.post('/', async (req, res) => {
     const exercise = new Exercise({
         ...req.body,
         createdBy: req.user._id
@@ -43,7 +40,7 @@ router.post('/', auth, async (req, res) => {
 });
 
 // Update exercise
-router.patch('/:id', auth, async (req, res) => {
+router.patch('/:id',async (req, res) => {
     try {
         const exercise = await Exercise.findById(req.params.id);
         if (!exercise) {
@@ -64,7 +61,7 @@ router.patch('/:id', auth, async (req, res) => {
 });
 
 // Delete exercise
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/:id', async (req, res) => {
     try {
         const exercise = await Exercise.findById(req.params.id);
         if (!exercise) {

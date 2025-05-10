@@ -1,9 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const WorkoutPlan = require('../models/WorkoutPlan');
-const auth = require('../middleware/auth');
-const admin = require('../middleware/admin');
-
 // Get all workout plans
 router.get('/', async (req, res) => {
     try {
@@ -34,7 +31,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Create new workout plan
-router.post('/', auth, async (req, res) => {
+router.post('/', async (req, res) => {
     const workoutPlan = new WorkoutPlan({
         ...req.body,
         createdBy: req.user._id
@@ -49,7 +46,7 @@ router.post('/', auth, async (req, res) => {
 });
 
 // Update workout plan
-router.patch('/:id', auth, async (req, res) => {
+router.patch('/:id', async (req, res) => {
     try {
         const workoutPlan = await WorkoutPlan.findById(req.params.id);
         if (!workoutPlan) {
@@ -70,7 +67,7 @@ router.patch('/:id', auth, async (req, res) => {
 });
 
 // Delete workout plan
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/:id', async (req, res) => {
     try {
         const workoutPlan = await WorkoutPlan.findById(req.params.id);
         if (!workoutPlan) {
@@ -90,7 +87,7 @@ router.delete('/:id', auth, async (req, res) => {
 });
 
 // Assign workout plan to user
-router.post('/:id/assign', auth, async (req, res) => {
+router.post('/:id/assign', async (req, res) => {
     try {
         const workoutPlan = await WorkoutPlan.findById(req.params.id);
         if (!workoutPlan) {
