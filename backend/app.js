@@ -6,6 +6,7 @@ const cors = require('cors');
 const userRoutes = require('./routes/userRoutes');
 const workoutRoutes = require('./routes/workoutRoutes');
 const updateRoutes = require('./routes/updateRoutes');
+const uploadRoutes = require('./routes/uploadRoutes'); // ✅ NEW
 
 // Create Express app
 const app = express();
@@ -24,6 +25,7 @@ app.get('/', (req, res) => {
 app.use('/api/users', userRoutes);
 app.use('/api/workouts', workoutRoutes);
 app.use('/api/update', updateRoutes);
+app.use('/api/upload', uploadRoutes); // ✅ NEW
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -31,4 +33,4 @@ app.use((err, req, res, next) => {
     res.status(500).json({ message: 'Something went wrong!' });
 });
 
-module.exports = app; 
+module.exports = app;
