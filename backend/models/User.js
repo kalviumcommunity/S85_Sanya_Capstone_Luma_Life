@@ -21,7 +21,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
-    
     createdAt: {
         type: Date,
         default: Date.now
@@ -31,5 +30,4 @@ const userSchema = new mongoose.Schema({
         ref: 'Workout'
     }],
 });
-
 module.exports = mongoose.model('User', userSchema); 
